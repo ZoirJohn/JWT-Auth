@@ -1,19 +1,21 @@
 import { NextFunction, Request, Response } from "express";
 import UserService from "../services/user-service";
+import { validationResult } from "express-validator";
+import { ApiError } from "../exceptions/ApiError.ts";
 
 class UserController {
 	async register(req: Request, res: Response, next: NextFunction) {
 		try {
+			const errors = validationResult(req);
+			if (!errors.isEmpty()) {
+				return next(ApiError.BadRequest("Validation error", errors.array()));
+			}
 			const { email, password } = req.body;
 			const user = await UserService.register(email, password);
 			res.cookie("refreshToken", user.refreshToken, { maxAge: 15 * 24 * 60 * 60 * 1000, httpOnly: true });
 			return res.json(user);
 		} catch (error) {
-			if (error instanceof Error) {
-				if (error.cause == "DUPLICATE_EMAIL") res.status(409).json({ message: "User with this email already exists" });
-			} else {
-				return res.status(500).json({ message: "Internal Server Error" });
-			}
+			next(error);
 		}
 	}
 	async login(req: Request, res: Response, next: NextFunction) {
@@ -26,7 +28,12 @@ class UserController {
 	}
 	async activate(req: Request, res: Response, next: NextFunction) {
 		try {
-		} catch (error) {}
+			const link = req.params.link;
+			await UserService.activate(link as string);
+			return res.redirect(process.env.CLIENT_URL!);
+		} catch (error) {
+			next(error);
+		}
 	}
 	async refresh(req: Request, res: Response, next: NextFunction) {
 		try {
