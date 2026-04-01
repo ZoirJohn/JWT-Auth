@@ -1,4 +1,4 @@
-import UserModel, { IUser } from "../models/user-model.ts";
+import  { IUser } from "../models/user-model.ts";
 
 class UserDTO {
 	id: string;

@@ -20,10 +20,19 @@ class UserController {
 	}
 	async login(req: Request, res: Response, next: NextFunction) {
 		try {
-		} catch (error) {}
+			const { email, password } = req.body;
+			const userData = await UserService.login(email, password);
+			return res.json(userData);
+		} catch (error) {
+			next(error);
+		}
 	}
 	async logout(req: Request, res: Response, next: NextFunction) {
 		try {
+			const { refreshToken } = req.cookies;
+			const token = await UserService.logout(refreshToken);
+			res.clearCookie("refreshToken");
+			return res.json(token);
 		} catch (error) {}
 	}
 	async activate(req: Request, res: Response, next: NextFunction) {
@@ -37,6 +46,9 @@ class UserController {
 	}
 	async refresh(req: Request, res: Response, next: NextFunction) {
 		try {
+			const { refreshToken } = req.cookies;
+			const userData = await UserService.refresh(refreshToken);
+			res.cookie("refreshToken", userData.refreshToken, { maxAge: 15 * 24 * 60 * 60 * 1000, httpOnly: true });
 		} catch (error) {}
 	}
 	async test(req: Request, res: Response, next: NextFunction) {
