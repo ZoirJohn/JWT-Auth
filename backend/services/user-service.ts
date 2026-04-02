@@ -61,7 +61,7 @@ class UserService {
 		const token = await TokenService.removeToken(refreshToken);
 		return token;
 	}
-	async refresh(refreshToken: string) {
+	async refresh(refreshToken: string) {		
 		if (!refreshToken) {
 			throw ApiError.UnauthorizedError();
 		}
