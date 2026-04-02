@@ -4,9 +4,9 @@ import TokenModel from "../models/token-model.ts";
 import UserDTO from "../dtos/user-dto.ts";
 
 class TokenService {
-	generateTokens(payload: unknown) {
-		const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET);
-		const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET);
+	generateTokens(payload: UserDTO) {
+		const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET!);
+		const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET!);
 
 		return { accessToken, refreshToken };
 	}

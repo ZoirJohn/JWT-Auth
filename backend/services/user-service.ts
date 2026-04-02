@@ -82,6 +82,10 @@ class UserService {
 			...tokens,
 		};
 	}
+	async getAllUsers() {
+		const users = await UserSchema.find();
+		return users
+	}
 }
 
 export default new UserService();

@@ -15,7 +15,7 @@ class UserController {
 			res.cookie("refreshToken", user.refreshToken, { maxAge: 15 * 24 * 60 * 60 * 1000, httpOnly: true });
 			return res.json(user);
 		} catch (error) {
-			next(error);
+			return next(error);
 		}
 	}
 	async login(req: Request, res: Response, next: NextFunction) {
@@ -24,7 +24,7 @@ class UserController {
 			const userData = await UserService.login(email, password);
 			return res.json(userData);
 		} catch (error) {
-			next(error);
+			return next(error);
 		}
 	}
 	async logout(req: Request, res: Response, next: NextFunction) {
@@ -41,20 +41,35 @@ class UserController {
 			await UserService.activate(link as string);
 			return res.redirect(process.env.CLIENT_URL!);
 		} catch (error) {
-			next(error);
+			return next(error);
 		}
 	}
 	async refresh(req: Request, res: Response, next: NextFunction) {
 		try {
 			const { refreshToken } = req.cookies;
 			const userData = await UserService.refresh(refreshToken);
+			console.log(userData);
+			
 			res.cookie("refreshToken", userData.refreshToken, { maxAge: 15 * 24 * 60 * 60 * 1000, httpOnly: true });
-		} catch (error) {}
+			return res.json(userData);
+		} catch (error) {
+			return next(error);
+		}
 	}
 	async test(req: Request, res: Response, next: NextFunction) {
 		try {
 			return res.status(200).json({ message: "Everything is fine!" });
-		} catch (error) {}
+		} catch (error) {
+			return next(error);
+		}
+	}
+	async users(req: Request, res: Response, next: NextFunction) {
+		try {
+			const users = await UserService.getAllUsers();
+			return res.json(users);
+		} catch (error) {
+			return next(error);
+		}
 	}
 }
 
