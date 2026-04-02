@@ -61,7 +61,7 @@ class UserService {
 		const token = await TokenService.removeToken(refreshToken);
 		return token;
 	}
-	async refresh(refreshToken: string) {		
+	async refresh(refreshToken: string) {
 		if (!refreshToken) {
 			throw ApiError.UnauthorizedError();
 		}
@@ -75,7 +75,7 @@ class UserService {
 		const user = await UserSchema.findById(userData.id);
 		const userDTO = new UserDTO(user as IUser);
 		const tokens = TokenService.generateTokens({ ...userDTO });
-		await TokenService.saveToken(userDTO.id, refreshToken);
+		await TokenService.saveToken(userDTO.id, tokens.refreshToken);
 
 		return {
 			user: userDTO,
@@ -84,7 +84,7 @@ class UserService {
 	}
 	async getAllUsers() {
 		const users = await UserSchema.find();
-		return users
+		return users;
 	}
 }
 
